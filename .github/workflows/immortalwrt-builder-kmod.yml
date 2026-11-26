@@ -187,7 +187,7 @@ jobs:
 
     - name: Organize files
       id: organize
-      if: env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+      if: success() && env.UPLOAD_FIRMWARE == 'true'
       run: |
         cd openwrt/bin/targets/*/*
         # rm -rf packages
@@ -196,14 +196,14 @@ jobs:
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@v4
-      if: steps.organize.outputs.status == 'success' && !cancelled()
+      if: success() && steps.organize.outputs.status == 'success'
       with:
         name: ImmortalWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
         path: ${{ env.FIRMWARE }}
 
     - name: Generate release tag and notes
       id: release
-      if: env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: success() && env.UPLOAD_RELEASE == 'true'
       run: |
         set -e
         cd openwrt/bin/targets/*/*
@@ -256,7 +256,7 @@ jobs:
 
     - name: Upload firmware to release
       uses: softprops/action-gh-release@master
-      if: steps.release.outputs.status == 'success' && !cancelled()
+      if: success() && steps.release.outputs.status == 'success'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
